@@ -53,13 +53,31 @@ playGame board player = do
   case makeMove board player move of
     Just newBoard -> do
       if isWinningMove newBoard player
-        then putStrLn $ "Jogador " ++ show player ++ " venceu!"
+        then do
+          putStrLn $ "Jogador " ++ show player ++ " venceu!"
+          playAgain <- askToPlayAgain
+          if playAgain
+            then playGame (createBoard boardSize) 1
+            else putStrLn "Obrigado por jogar!"
         else if isBoardFull newBoard
-          then putStrLn "Empate!"
+          then do
+            putStrLn "Empate!"
+            playAgain <- askToPlayAgain
+            if playAgain
+              then playGame (createBoard boardSize) 1
+              else putStrLn "Obrigado por jogar!"
           else playGame newBoard (nextPlayer player)
     Nothing -> do
       putStrLn "Jogada inválida, tente novamente."
       playGame board player
+  where
+    boardSize = length board
+
+askToPlayAgain :: IO Bool
+askToPlayAgain = do
+  putStrLn "Quer jogar novamente? (S/N): "
+  response <- getLine
+  return $ response == "S"
 
 -- Get the player's move from the command line
 getPlayerMove :: Player -> IO Position
