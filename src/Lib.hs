@@ -50,27 +50,27 @@ playGame :: Board -> Player -> IO ()
 playGame board player = do
   printBoard board
   if isWinningMove board player
-    then putStrLn $ "Player " ++ show player ++ " wins!"
+    then putStrLn $ "Jogador " ++ show player ++ " venceu!"
     else if isBoardFull board
-         then putStrLn "It's a draw!"
+         then putStrLn "Empate!"
          else do
            move <- getPlayerMove player
            case makeMove board player move of
              Just newBoard -> playGame newBoard (nextPlayer player)
              Nothing -> do
-               putStrLn "Invalid move. Try again."
+               putStrLn "Jogada inválida, tente novamente."
                playGame board player
 
 -- Get the player's move from the command line
 getPlayerMove :: Player -> IO Position
 getPlayerMove player = do
-  putStrLn $ "Player " ++ show player ++ ", enter your move (row column): "
+  putStrLn $ "Jogador " ++ show player ++ ", faça sua jogada (linha [0,1,2] e coluna [0,1,2]): "
   input <- getLine
   let position = parsePosition input
   case position of
     Just pos -> return pos
     Nothing -> do
-      putStrLn "Invalid input. Try again."
+      putStrLn "Jogada inválida, tente novamente."
       getPlayerMove player
 
 -- Parse the player's move input
