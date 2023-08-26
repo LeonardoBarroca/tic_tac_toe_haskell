@@ -9,18 +9,18 @@ type Player = Int
 type Position = (Int, Int)
 type Board = [[Maybe Player]]
 
--- Create an empty Tic-Tac-Toe board
+-- Cria o quadro do jogo da velha vazio, dependendo do tamanho. Padrão: 3x3
 createBoard :: Int -> Board
 createBoard size = replicate size (replicate size Nothing)
 
--- Print the Tic-Tac-Toe board
+-- Imprime o quadro do jogo da velha
 printBoard :: Board -> IO ()
 printBoard board = do
   let rows = map (intercalate " | " . map (maybe " " show)) board
   let separator = replicate (length (head rows) * 2 - 1) '-'
   putStrLn $ intercalate ("\n" ++ separator ++ "\n") rows
 
--- Update the board with a player's move
+-- Atualiza o quadro com o movimento atual
 makeMove :: Board -> Player -> Position -> Maybe Board
 makeMove board player (row, col)
   | row >= 0 && row < size && col >= 0 && col < size && isEmpty (board !! row !! col) =
@@ -31,11 +31,11 @@ makeMove board player (row, col)
     isEmpty = (== Nothing)
     replace2D lst i val = take i lst ++ [val] ++ drop (i + 1) lst
 
--- Check if the board is full
+-- Verifica se o quadro está cheio
 isBoardFull :: Board -> Bool
 isBoardFull = all (notElem Nothing)
 
--- Check if a player has won
+-- Verifica se o jogador venceu
 isWinningMove :: Board -> Player -> Bool
 isWinningMove board player =
   any (all (== Just player)) (rows ++ columns ++ diagonals)
@@ -45,7 +45,7 @@ isWinningMove board player =
     columns = [[board !! row !! col | row <- [0..size-1]] | col <- [0..size-1]]
     diagonals = [[board !! i !! i | i <- [0..size-1]], [board !! i !! (size-1-i) | i <- [0..size-1]]]
 
--- Play the game
+-- Função principal do jogo, onde ocorre o fluxo do jogo e uso das outras funções
 playGame :: Board -> Player -> IO ()
 playGame board player = do
   printBoard board
@@ -73,13 +73,14 @@ playGame board player = do
   where
     boardSize = length board
 
+-- Verifica se o jogador quer jogar outra partida
 askToPlayAgain :: IO Bool
 askToPlayAgain = do
   putStrLn "Quer jogar novamente? (S/N): "
   response <- getLine
   return $ response == "S"
 
--- Get the player's move from the command line
+-- Obtém o movimento do jogador
 getPlayerMove :: Player -> IO Position
 getPlayerMove player = do
   putStrLn $ "Jogador " ++ show player ++ ", faça sua jogada (linha [0,1,2] e coluna [0,1,2]): "
@@ -91,7 +92,7 @@ getPlayerMove player = do
       putStrLn "Jogada inválida, tente novamente."
       getPlayerMove player
 
--- Parse the player's move input
+-- Converte o movimento do jogador
 parsePosition :: String -> Maybe Position
 parsePosition input = case words input of
   [row, col] -> do
@@ -100,13 +101,13 @@ parsePosition input = case words input of
     return (r, c)
   _ -> Nothing
 
--- Read a value from a string
+-- Lê o valor de uma string
 readMaybe :: Read a => String -> Maybe a
 readMaybe s = case reads s of
   [(x, "")] -> Just x
   _ -> Nothing
 
--- Determine the next player
+-- Determina o próximo jogador
 nextPlayer :: Player -> Player
 nextPlayer 1 = 2
 nextPlayer 2 = 1
