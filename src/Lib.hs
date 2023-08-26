@@ -1,6 +1,7 @@
 module Lib
     ( createBoard
     , playGame
+    , PlayerMode(..)
     ) where
 
 import Data.List (intercalate)
@@ -8,6 +9,8 @@ import Data.List (intercalate)
 type Player = Int
 type Position = (Int, Int)
 type Board = [[Maybe Player]]
+
+data PlayerMode = HumanVsHuman | HumanVsAI deriving (Eq)
 
 -- Cria o quadro do jogo da velha vazio, dependendo do tamanho. Padrão: 3x3
 createBoard :: Int -> Board
@@ -46,10 +49,11 @@ isWinningMove board player =
     diagonals = [[board !! i !! i | i <- [0..size-1]], [board !! i !! (size-1-i) | i <- [0..size-1]]]
 
 -- Função principal do jogo, onde ocorre o fluxo do jogo e uso das outras funções
-playGame :: Board -> Player -> IO ()
-playGame board player = do
+playGame :: Board -> Player -> PlayerMode -> IO ()
+playGame board player mode = do
   printBoard board
-  move <- getPlayerMove player
+  let boardSize = length board
+  move <- getPlayerMove player mode board
   case makeMove board player move of
     Just newBoard -> do
       if isWinningMove newBoard player
@@ -57,21 +61,19 @@ playGame board player = do
           putStrLn $ "Jogador " ++ show player ++ " venceu!"
           playAgain <- askToPlayAgain
           if playAgain
-            then playGame (createBoard boardSize) 1
+            then playGame (createBoard boardSize) 1 mode
             else putStrLn "Obrigado por jogar!"
         else if isBoardFull newBoard
           then do
             putStrLn "Empate!"
             playAgain <- askToPlayAgain
             if playAgain
-              then playGame (createBoard boardSize) 1
+              then playGame (createBoard boardSize) 1 mode
               else putStrLn "Obrigado por jogar!"
-          else playGame newBoard (nextPlayer player)
+          else playGame newBoard (nextPlayer player) mode
     Nothing -> do
       putStrLn "Jogada inválida, tente novamente."
-      playGame board player
-  where
-    boardSize = length board
+      playGame board player mode
 
 -- Verifica se o jogador quer jogar outra partida
 askToPlayAgain :: IO Bool
@@ -81,8 +83,17 @@ askToPlayAgain = do
   return $ response == "S"
 
 -- Obtém o movimento do jogador
-getPlayerMove :: Player -> IO Position
-getPlayerMove player = do
+getPlayerMove :: Player -> PlayerMode -> Board -> IO Position
+getPlayerMove player mode board
+  | mode == HumanVsHuman = getHumanMove player
+  | mode == HumanVsAI && player == 1 = getHumanMove player
+  | mode == HumanVsAI && player == 2 = do
+      putStrLn "Turno da máquina:"
+      return $ makeAIMove board player
+  | otherwise = undefined
+
+getHumanMove :: Player -> IO Position
+getHumanMove player = do
   putStrLn $ "Jogador " ++ show player ++ ", faça sua jogada (linha [0,1,2] e coluna [0,1,2]): "
   input <- getLine
   let position = parsePosition input
@@ -90,7 +101,7 @@ getPlayerMove player = do
     Just pos -> return pos
     Nothing -> do
       putStrLn "Jogada inválida, tente novamente."
-      getPlayerMove player
+      getHumanMove player
 
 -- Converte o movimento do jogador
 parsePosition :: String -> Maybe Position
@@ -111,3 +122,15 @@ readMaybe s = case reads s of
 nextPlayer :: Player -> Player
 nextPlayer 1 = 2
 nextPlayer 2 = 1
+
+makeAIMove :: Board -> Player -> Position
+makeAIMove board player = findBestMove board player
+
+-- Encontra o melhor movimento para a IA
+findBestMove :: Board -> Player -> Position
+findBestMove board player = head $ filter (isValidMove board) possibleMoves
+  where
+    isValidMove b pos = case makeMove b player pos of
+      Just _ -> True
+      Nothing -> False
+    possibleMoves = [(row, col) | row <- [0..2], col <- [0..2]]
