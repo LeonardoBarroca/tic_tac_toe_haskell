@@ -49,17 +49,17 @@ isWinningMove board player =
 playGame :: Board -> Player -> IO ()
 playGame board player = do
   printBoard board
-  if isWinningMove board player
-    then putStrLn $ "Jogador " ++ show player ++ " venceu!"
-    else if isBoardFull board
-         then putStrLn "Empate!"
-         else do
-           move <- getPlayerMove player
-           case makeMove board player move of
-             Just newBoard -> playGame newBoard (nextPlayer player)
-             Nothing -> do
-               putStrLn "Jogada inválida, tente novamente."
-               playGame board player
+  move <- getPlayerMove player
+  case makeMove board player move of
+    Just newBoard -> do
+      if isWinningMove newBoard player
+        then putStrLn $ "Jogador " ++ show player ++ " venceu!"
+        else if isBoardFull newBoard
+          then putStrLn "Empate!"
+          else playGame newBoard (nextPlayer player)
+    Nothing -> do
+      putStrLn "Jogada inválida, tente novamente."
+      playGame board player
 
 -- Get the player's move from the command line
 getPlayerMove :: Player -> IO Position
