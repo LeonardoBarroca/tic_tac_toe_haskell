@@ -3,8 +3,8 @@ Proposta de projeto da disciplina Paradigmar de Programação
 Nome: Leonardo de Carvalho Barroca
 RA: 11201722574
 
-Nome:
-RA:
+Nome: Carlos Alberto da Silva Junior
+RA: 11052813
 
 Proposta:
 Implementar o jogo Tic Tac Toe. Desenvolver o clássico jogo da velha contendo 2 modos,
