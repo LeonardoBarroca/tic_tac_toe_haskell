@@ -1,0 +1,38 @@
+Proposta de projeto da disciplina Paradigmar de Programação
+
+Nome: Leonardo de Carvalho Barroca
+RA: 11201722574
+
+Nome:
+RA:
+
+Proposta:
+Implementar o jogo Tic Tac Toe. Desenvolver o clássico jogo da velha contendo 2 modos,
+um deles seria o Humano vs Humano, este possui um frontend ao ser executado, e o outro 
+seria o Humano vs Máquina que é executado no terminal.
+
+Instruções de uso:
+ - Instalar o pacote: sudo apt-get install freeglut3-dev
+ - Clonar o repositótio
+ - Executar os comandos:
+     - stack build
+     - stack run
+
+Principais Dificuldades:
+ - Preparar todo ambiente Linux
+ - Pensar nas funções antes de implementar
+ - Trabalhar com a tipagem forte do Haskell
+ - Integrar o frontend com as funções do backend
+ - Entender a sintaxe da biblioteca gloss.
+
+Surpresas:
+ - Foi necessário migrar de sistema operacional de Windows para Linux Ubuntu para implementar o frontend corretamente com gloss
+
+Destaques:
+ - Foi um aprendizado muito importante para nós implementar o projeto com um paradigma 100% 
+ funcional. A sintaxe do Haskell, por ser bem diferente de linguagens que conhecíamos, nos 
+ fez mudar a forma de pensar e solucionar problemas como desenvolvedores. Ao decorrer do desenvolvimento
+ entemos a importância da tipagem forte, do lazy, das funções puras e de diversas vantagens que esse 
+ paradigma nos oferece.
+
+Vídeo:
