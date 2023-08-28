@@ -1,6 +1,7 @@
 module Lib where
 
 import Data.List (intercalate)
+import System.Random
 
 type Player = Int
 type Position = (Int, Int)
@@ -16,7 +17,7 @@ createBoard size = replicate size (replicate size Nothing)
 printBoard :: Board -> IO ()
 printBoard board = do
   let rows = map (intercalate " | " . map (maybe " " show)) board
-  let separator = replicate (length (head rows) * 2 - 1) '-'
+  let separator = replicate (length (head rows)) '-'
   putStrLn $ intercalate ("\n" ++ separator ++ "\n") rows
 
 -- Atualiza o quadro com o movimento atual
@@ -54,21 +55,23 @@ playGame board player mode = do
     Just newBoard -> do
       if isWinningMove newBoard player
         then do
-          putStrLn $ "Jogador " ++ show player ++ " venceu!"
+          printBoard newBoard
+          putStrLn $ "Jogador " ++ show player ++ " venceu!\n"
           playAgain <- askToPlayAgain
           if playAgain
             then playGame (createBoard boardSize) 1 mode
-            else putStrLn "Obrigado por jogar!"
+            else putStrLn "Obrigado por jogar!\n"
         else if isBoardFull newBoard
           then do
-            putStrLn "Empate!"
+            printBoard newBoard
+            putStrLn "Empate!\n"
             playAgain <- askToPlayAgain
             if playAgain
               then playGame (createBoard boardSize) 1 mode
-              else putStrLn "Obrigado por jogar!"
+              else putStrLn "Obrigado por jogar!\n"
           else playGame newBoard (nextPlayer player) mode
     Nothing -> do
-      putStrLn "Jogada inválida, tente novamente."
+      putStrLn "Jogada inválida, tente novamente.\n"
       playGame board player mode
 
 -- Verifica se o jogador quer jogar outra partida
@@ -78,25 +81,26 @@ askToPlayAgain = do
   response <- getLine
   return $ response == "S"
 
--- Obtém o movimento do jogador
+-- Obtém o movimento do jogador (humano ou máquina)
 getPlayerMove :: Player -> PlayerMode -> Board -> IO Position
 getPlayerMove player mode board
   | mode == HumanVsHuman = getHumanMove player
   | mode == HumanVsAI && player == 1 = getHumanMove player
   | mode == HumanVsAI && player == 2 = do
-      putStrLn "Turno da máquina:"
+      putStrLn "Turno da máquina:\n"
       return $ makeAIMove board player
   | otherwise = undefined
 
+-- Obtém o movimento do jogador humano
 getHumanMove :: Player -> IO Position
 getHumanMove player = do
-  putStrLn $ "Jogador " ++ show player ++ ", faça sua jogada (linha [0,1,2] e coluna [0,1,2]): "
+  putStrLn $ "Jogador " ++ show player ++ ", faça sua jogada (linha [0,1,2] e coluna [0,1,2]). Exemplo: 0 0, 2 1\n"
   input <- getLine
   let position = parsePosition input
   case position of
     Just pos -> return pos
     Nothing -> do
-      putStrLn "Jogada inválida, tente novamente."
+      putStrLn "Jogada inválida, tente novamente.\n"
       getHumanMove player
 
 -- Converte o movimento do jogador
@@ -119,23 +123,28 @@ nextPlayer :: Player -> Player
 nextPlayer 1 = 2
 nextPlayer 2 = 1
 
+-- Realiza o movimento da máquina
 makeAIMove :: Board -> Player -> Position
 makeAIMove board player = findBestMove board player
 
--- Encontra o melhor movimento para a IA
+-- Encontra o melhor movimento para a máquina
 findBestMove :: Board -> Player -> Position
-findBestMove board player = head $ filter (isValidMove board) possibleMoves
+findBestMove board player =
+    let possibleMoves = [(row, col) | row <- [0..2], col <- [0..2]]
+        validMoves = filter (isValidMove board) possibleMoves
+        (randomIndex, newGen) = randomR (0, length validMoves - 1) initialGen
+        randomValidMove = validMoves !! randomIndex
+    in randomValidMove
   where
-    isValidMove b pos = case makeMove b player pos of
-      Just _ -> True
-      Nothing -> False
-    possibleMoves = [(row, col) | row <- [0..2], col <- [0..2]]
+    initialGen = mkStdGen 10
 
--- Verifica se o movimento é válido em um determinado tabuleiro e posição
+-- Valida se o movimento da máquina é válido
 isValidMove :: Board -> Position -> Bool
-isValidMove board pos = case makeMove board 1 pos of
-    Just _ -> True
-    Nothing -> False
+isValidMove board (row, col) =
+  row >= 0 && row < size && col >= 0 && col < size && isEmpty (board !! row !! col)
+  where
+    size = length board
+    isEmpty = (== Nothing)
 
 updateBoard :: Board -> Player -> Position -> Maybe Board
 updateBoard b p (row, col) =
