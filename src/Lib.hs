@@ -1,8 +1,4 @@
-module Lib
-    ( createBoard
-    , playGame
-    , PlayerMode(..)
-    ) where
+module Lib where
 
 import Data.List (intercalate)
 
@@ -134,3 +130,15 @@ findBestMove board player = head $ filter (isValidMove board) possibleMoves
       Just _ -> True
       Nothing -> False
     possibleMoves = [(row, col) | row <- [0..2], col <- [0..2]]
+
+-- Verifica se o movimento é válido em um determinado tabuleiro e posição
+isValidMove :: Board -> Position -> Bool
+isValidMove board pos = case makeMove board 1 pos of
+    Just _ -> True
+    Nothing -> False
+
+updateBoard :: Board -> Player -> Position -> Maybe Board
+updateBoard b p (row, col) =
+    case makeMove b p (row, col) of
+        Just newBoard -> Just newBoard
+        Nothing -> Nothing
