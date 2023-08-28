@@ -1,8 +1,7 @@
 module Main (main) where
 
 import Lib
-
--- data PlayerMode = HumanVsHuman | HumanVsAI deriving (Eq)
+import Front 
 
 main :: IO ()
 main = do
@@ -10,7 +9,11 @@ main = do
   mode <- chooseGameMode
   let boardSize = 3
   let initialBoard = createBoard boardSize
-  playGame initialBoard 1 mode
+
+  case mode of
+    HumanVsHuman -> playGameGraphics initialBoard 
+    HumanVsAI -> playGame initialBoard 1 mode
+
   putStrLn "Pressione qualquer tecla para encerrar o programa..."
   getChar
   putStrLn "\nEncerrando o programa."
