@@ -7,7 +7,7 @@ type Player = Int
 type Position = (Int, Int)
 type Board = [[Maybe Player]]
 
-data PlayerMode = HumanVsHuman | HumanVsAI deriving (Eq)
+data PlayerMode = HumanVsHumanConsole | HumanVsHuman | HumanVsAI deriving (Eq)
 
 -- Cria o quadro do jogo da velha vazio, dependendo do tamanho. Padrão: 3x3
 createBoard :: Int -> Board
@@ -84,7 +84,7 @@ askToPlayAgain = do
 -- Obtém o movimento do jogador (humano ou máquina)
 getPlayerMove :: Player -> PlayerMode -> Board -> IO Position
 getPlayerMove player mode board
-  | mode == HumanVsHuman = getHumanMove player
+  | mode == HumanVsHumanConsole = getHumanMove player
   | mode == HumanVsAI && player == 1 = getHumanMove player
   | mode == HumanVsAI && player == 2 = do
       putStrLn "Turno da máquina:\n"
