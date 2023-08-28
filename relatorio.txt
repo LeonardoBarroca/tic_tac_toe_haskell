@@ -22,6 +22,7 @@ Principais Dificuldades:
  - Preparar todo ambiente Linux
  - Pensar nas funções antes de implementar
  - Trabalhar com a tipagem forte do Haskell
+ - Geração de números aleatórios
  - Integrar o frontend com as funções do backend
  - Entender a sintaxe da biblioteca gloss.
 
