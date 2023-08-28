@@ -32,7 +32,7 @@ Destaques:
  - Foi um aprendizado muito importante para nós implementar o projeto com um paradigma 100% 
  funcional. A sintaxe do Haskell, por ser bem diferente de linguagens que conhecíamos, nos 
  fez mudar a forma de pensar e solucionar problemas como desenvolvedores. Ao decorrer do desenvolvimento
- entemos a importância da tipagem forte, do lazy, das funções puras e de diversas vantagens que esse 
+ entendemos a importância da tipagem forte, do lazy, das funções puras e de diversas vantagens que esse 
  paradigma nos oferece.
 
 Vídeo:
