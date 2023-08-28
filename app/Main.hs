@@ -11,7 +11,8 @@ main = do
   let initialBoard = createBoard boardSize
 
   case mode of
-    HumanVsHuman -> playGameGraphics initialBoard 
+    HumanVsHuman -> playGameGraphics initialBoard
+    HumanVsHumanConsole -> playGame initialBoard 1 mode
     HumanVsAI -> playGame initialBoard 1 mode
 
   putStrLn "Pressione qualquer tecla para encerrar o programa..."
@@ -21,12 +22,14 @@ main = do
 chooseGameMode :: IO PlayerMode
 chooseGameMode = do
   putStrLn "Escolha o modo de jogo:"
-  putStrLn "1. Humano vs. Humano"
-  putStrLn "2. Humano vs. Máquina"
+  putStrLn "1. Humano vs. Humano (interface gráfica)"
+  putStrLn "2. Humano vs. Humano (console)"
+  putStrLn "3. Humano vs. Máquina (console)"
   input <- getLine
   case input of
     "1" -> return HumanVsHuman
-    "2" -> return HumanVsAI
+    "2" -> return HumanVsHumanConsole
+    "3" -> return HumanVsAI
     _ -> do
       putStrLn "Opção inválida. Por favor, escolha 1 ou 2."
       chooseGameMode
